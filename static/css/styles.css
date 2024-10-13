@@ -1,0 +1,14 @@
+#map {
+    height: calc(100vh - 56px);
+    width: 100%;
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+@media (max-width: 576px) {
+    #map {
+        height: calc(100vh - 56px);
+    }
+}
