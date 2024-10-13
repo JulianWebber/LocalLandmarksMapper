@@ -27,14 +27,14 @@ def get_landmarks():
 
         # Validate parameters
         if not lat or not lon:
-            return jsonify({"error": "Missing latitude or longitude"}), 400
+            return jsonify({"landmarks": []}), 400
 
         try:
             lat = float(lat)
             lon = float(lon)
             radius = float(radius)
         except ValueError:
-            return jsonify({"error": "Invalid latitude, longitude, or radius"}), 400
+            return jsonify({"landmarks": []}), 400
 
         # Construct Wikipedia API URL
         base_url = "https://en.wikipedia.org/w/api.php"
@@ -43,7 +43,7 @@ def get_landmarks():
             "format": "json",
             "list": "geosearch",
             "gscoord": f"{lat}|{lon}",
-            "gsradius": min(radius, 10000),  # Cap radius at 10km as per API limits
+            "gsradius": min(int(radius), 10000),  # Cap radius at 10km as per API limits
             "gslimit": 50
         }
         url = f"{base_url}?{urlencode(params)}"
@@ -59,16 +59,16 @@ def get_landmarks():
         app.logger.debug(f"API response: {data}")
 
         landmarks = data['query']['geosearch']
-        return jsonify(landmarks)
+        return jsonify({'landmarks': landmarks})
     except requests.RequestException as e:
         app.logger.error(f"Request error: {str(e)}")
-        return jsonify({"error": "Failed to fetch landmarks from Wikipedia API"}), 500
+        return jsonify({"landmarks": []}), 500
     except KeyError as e:
         app.logger.error(f"KeyError in API response: {str(e)}")
-        return jsonify({"error": "Unexpected API response format"}), 500
+        return jsonify({"landmarks": []}), 500
     except Exception as e:
         app.logger.error(f"Unexpected error: {str(e)}")
-        return jsonify({"error": "An unexpected error occurred"}), 500
+        return jsonify({"landmarks": []}), 500
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)

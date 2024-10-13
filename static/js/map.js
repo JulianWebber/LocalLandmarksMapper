@@ -48,9 +48,13 @@ function fetchLandmarks() {
         .then(data => {
             console.log('Landmarks data:', data);
             clearMarkers();
-            data.forEach(landmark => {
-                addMarker(landmark);
-            });
+            if (Array.isArray(data.landmarks)) {
+                data.landmarks.forEach(landmark => {
+                    addMarker(landmark);
+                });
+            } else {
+                console.error('Invalid landmarks data format:', data);
+            }
         })
         .catch(error => console.error('Error fetching landmarks:', error));
 }
